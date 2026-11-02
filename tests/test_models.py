@@ -12,7 +12,11 @@ import numpy as np
 from mlx.utils import tree_flatten, tree_map
 
 from mlx_lm.models import rope_utils
-from mlx_lm.models.base import create_causal_mask, scaled_dot_product_attention
+from mlx_lm.models.base import (
+    create_causal_mask,
+    quantized_scaled_dot_product_attention,
+    scaled_dot_product_attention,
+)
 from mlx_lm.models.cache import (
     BatchKVCache,
     KVCache,
@@ -347,6 +351,133 @@ class TestModels(unittest.TestCase):
             scale=1.0,
         )
         self.assertTrue(mx.allclose(out, qout, rtol=1e-2, atol=1e-2))
+
+    @unittest.skipUnless(
+        mx.metal.is_available() and mx.default_device() == mx.gpu,
+        "Requires Metal fused attention",
+    )
+    def test_quantized_sdpa_prefill(self):
+        for dtype in (mx.float32, mx.float16, mx.bfloat16):
+            for bits in (2, 3, 4, 6, 8):
+                for dim in (64, 128):
+                    for mask in (None, "causal"):
+                        with self.subTest(dtype=dtype, bits=bits, dim=dim, mask=mask):
+                            q = mx.random.normal((2, 8, 512, dim)).astype(dtype)
+                            k = mx.random.normal((2, 2, 641, dim)).astype(dtype)
+                            v = mx.random.normal((2, 2, 641, dim)).astype(dtype)
+                            qk = mx.quantize(k, group_size=64, bits=bits)
+                            qv = mx.quantize(v, group_size=64, bits=bits)
+                            keys = mx.dequantize(*qk, group_size=64, bits=bits)
+                            values = mx.dequantize(*qv, group_size=64, bits=bits)
+                            keys = mx.repeat(keys.astype(mx.float32), 4, axis=1)
+                            values = mx.repeat(values.astype(mx.float32), 4, axis=1)
+                            scores = (
+                                q.astype(mx.float32) @ keys.swapaxes(-1, -2)
+                            ) * dim**-0.5
+                            if mask:
+                                scores = mx.where(
+                                    create_causal_mask(512, offset=129),
+                                    scores,
+                                    -float("inf"),
+                                )
+                            expected = mx.softmax(scores, axis=-1) @ values
+                            actual = quantized_scaled_dot_product_attention(
+                                q, qk, qv, scale=dim**-0.5, mask=mask, bits=bits
+                            )
+                            mx.eval(expected, actual)
+                            self.assertEqual(actual.dtype, dtype)
+                            self.assertTrue(
+                                mx.allclose(actual, expected, atol=4e-3, rtol=1e-2)
+                            )
+
+    @unittest.skipUnless(
+        mx.metal.is_available() and mx.default_device() == mx.gpu,
+        "Requires Metal fused attention",
+    )
+    def test_quantized_prefill_avoids_attention_matrix(self):
+        q = mx.random.normal((1, 8, 512, 64)).astype(mx.float16)
+        k = mx.quantize(mx.random.normal((1, 2, 4096, 64)).astype(mx.float16), bits=8)
+        v = mx.quantize(mx.random.normal((1, 2, 4096, 64)).astype(mx.float16), bits=8)
+        with mock.patch.object(
+            mx, "quantized_matmul", side_effect=AssertionError("Unfused attention")
+        ):
+            out = quantized_scaled_dot_product_attention(
+                q, k, v, scale=0.125, mask="causal"
+            )
+            mx.eval(out)
+        self.assertEqual(out.shape, q.shape)
+
+    def test_quantized_sdpa_keeps_small_and_masked_paths(self):
+        for length, dim, use_mask in [
+            (1, 64, False),
+            (16, 128, False),
+            (128, 128, False),
+            (256, 64, False),
+            (512, 32, False),
+            (512, 256, False),
+            (512, 64, True),
+        ]:
+            with self.subTest(length=length, dim=dim, use_mask=use_mask):
+                q = mx.random.normal((1, 4, length, dim)).astype(mx.float16)
+                k = mx.quantize(
+                    mx.random.normal((1, 2, 768, dim)).astype(mx.float16),
+                    group_size=32,
+                    bits=8,
+                )
+                v = mx.quantize(
+                    mx.random.normal((1, 2, 768, dim)).astype(mx.float16),
+                    group_size=32,
+                    bits=8,
+                )
+                mask = (
+                    create_causal_mask(length, offset=768 - length)
+                    if use_mask
+                    else None
+                )
+                with mock.patch.object(
+                    mx,
+                    "dequantize",
+                    side_effect=AssertionError("Unexpected dequantization"),
+                ):
+                    out = quantized_scaled_dot_product_attention(
+                        q, k, v, scale=dim**-0.5, mask=mask, group_size=32
+                    )
+                    mx.eval(out)
+                self.assertEqual(out.shape, q.shape)
+
+    @unittest.skipUnless(
+        mx.metal.is_available() and mx.default_device() == mx.gpu,
+        "Requires Metal fused attention",
+    )
+    def test_quantized_prefill_compiled_mha(self):
+        q = mx.random.normal((1, 4, 512, 128)).astype(mx.float16)
+        k = mx.quantize(mx.random.normal(q.shape).astype(q.dtype), bits=8)
+        v = mx.quantize(mx.random.normal(q.shape).astype(q.dtype), bits=8)
+        attention = mx.compile(
+            lambda q, k, v: quantized_scaled_dot_product_attention(
+                q, k, v, scale=128**-0.5, mask="causal"
+            )
+        )
+        expected = quantized_scaled_dot_product_attention(
+            mx.array(q), k, v, scale=128**-0.5, mask="causal"
+        )
+        actual = attention(q, k, v)
+        self.assertTrue(mx.allclose(actual, expected, atol=1e-3, rtol=1e-3))
+
+    def test_quantized_prefill_cpu(self):
+        with mx.stream(mx.cpu):
+            q = mx.ones((1, 2, 512, 64), mx.float32)
+            k = mx.quantize(q, bits=8)
+            v = mx.quantize(q, bits=8)
+            with mock.patch.object(
+                mx,
+                "dequantize",
+                side_effect=AssertionError("Unexpected dequantization"),
+            ):
+                out = quantized_scaled_dot_product_attention(
+                    q, k, v, scale=0.125, mask="causal"
+                )
+                self.assertTrue(mx.allclose(out, mx.ones_like(q)))
 
     def test_quantized_sdpa_gqa_batched_mask(self):
         # Regression test: quantized SDPA with grouped-query attention and a

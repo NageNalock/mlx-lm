@@ -71,6 +71,23 @@ def quantized_scaled_dot_product_attention(
     bits: int = 8,
 ) -> mx.array:
     B, n_q_heads, L, D = queries.shape
+
+    # Large prefills use fused SDPA to avoid storing the full attention matrix.
+    # Dequantize only this layer's K/V; keep the cache in its quantized format.
+    if (
+        L >= 512
+        and D in (64, 128)
+        and q_values[0].shape[-1] * 32 // bits == D
+        and (mask is None or isinstance(mask, str))
+        and mx.metal.is_available()
+        and mx.default_device() == mx.gpu
+    ):
+        keys = mx.dequantize(*q_keys, group_size=group_size, bits=bits)
+        values = mx.dequantize(*q_values, group_size=group_size, bits=bits)
+        return mx.fast.scaled_dot_product_attention(
+            queries * scale, keys, values, scale=1.0, mask=mask
+        )
+
     n_kv_heads = q_keys[0].shape[-3]
     n_repeats = n_q_heads // n_kv_heads
 

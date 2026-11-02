@@ -1,0 +1,44 @@
+{
+  "hardware": "Apple M1 Pro, 32 GiB unified memory",
+  "models": {
+    "14B": "mlx-community/Qwen3-14B-4bit@a4d9b2df59d2c150bef02fcbe0d91046b7ca33a4",
+    "32B": "mlx-community/Qwen3-32B-4bit@bcaaf7f538adf166c1080a2befdb4f6019f66639"
+  },
+  "input_lengths": [
+    8192,
+    16384,
+    32768
+  ],
+  "forced_output_tokens": 256,
+  "request_batch_size": 1,
+  "baseline_commit": "736ab0d8c1d0edc79c3d798044fe6904e2fa23be",
+  "patched_commit": "2836d8a6c74b8622c306c6eb806870955e9c80cf",
+  "primary_same_precision_comparison": "4-bit weights, 8-bit KV, group size 64, quantized_kv_start=0",
+  "baseline_tuning": {
+    "prefill_step_sizes": [
+      2048,
+      1024,
+      512,
+      256,
+      128
+    ],
+    "additional_cache_precisions": [
+      16,
+      4
+    ],
+    "selection": "Progressively reduce chunks if memory budget or latency requires it; evaluate unquantized fused attention where it fits. Low-bit cache requires a separate quality check."
+  },
+  "mlx_allocation_budget_bytes": 26800603136,
+  "budget_note": "Recommended GPU working set, not physical memory limit and not simulated smaller hardware. An allocation-budget stop is not OOM.",
+  "provisional_usable_limits": {
+    "ttft_s": 300,
+    "decode_tokens_per_second_min": 5
+  },
+  "user_preference": "Long documents / code analysis; willing to wait several minutes for initial processing, wants fluent subsequent generation.",
+  "evidence_rule": "A larger-model capacity claim requires the larger model to meet the same memory, latency and quality criteria only after the change, versus reasonably tuned baseline configurations. If a tuned baseline also passes, report speed/headroom improvement instead.",
+  "screening": "One fresh-process trial after 512-token warmup. Repeat decisive comparisons; screening results alone are not final timing claims.",
+  "system_metrics": "Record system-wide swap and pressure before load, after load, throughout prefill and after generation. Existing background swap is not a benchmark failure; no causal swap claim from unpaired trials.",
+  "recorded_at": "2026-11-02T07:27:00.688681+00:00",
+  "recorded_before_any_14b_or_32b_measurement": true,
+  "early_stop_policy": "Stop a target prefill after a chunk exceeds 300 seconds, since it has already failed the predeclared latency limit. Report a lower bound, not a completed TTFT. Memory-budget and system-pressure stops remain distinct from OOM."
+}

@@ -1,0 +1,47 @@
+{
+  "verification": "Each downloaded weight file was SHA-256 verified against metadata obtained from the official Hugging Face repository at the pinned revision. Public weight data was transferred through hf-mirror.com; no authentication credentials were sent to that mirror.",
+  "weights": [
+    {
+      "model": "mlx-community/Qwen3-14B-4bit",
+      "revision": "a4d9b2df59d2c150bef02fcbe0d91046b7ca33a4",
+      "file": "model-00001-of-00002.safetensors",
+      "bytes": 5354381380,
+      "sha256": "5795efcfc7c96fd273e600562e8b111bfcc427415de9001d0a07e70cd99cff19"
+    },
+    {
+      "model": "mlx-community/Qwen3-14B-4bit",
+      "revision": "a4d9b2df59d2c150bef02fcbe0d91046b7ca33a4",
+      "file": "model-00002-of-00002.safetensors",
+      "bytes": 2953517134,
+      "sha256": "2814562d654fe2d541fd4682804a0ccaa400e79701872c8e9f5998cf9481fdf8"
+    },
+    {
+      "model": "mlx-community/Qwen3-32B-4bit",
+      "revision": "bcaaf7f538adf166c1080a2befdb4f6019f66639",
+      "file": "model-00001-of-00004.safetensors",
+      "bytes": 5366619059,
+      "sha256": "c37d8ac8663e5bcfb7334889dcba56e3c6b3d7a9b8643a62c5f8b6105765aee1"
+    },
+    {
+      "model": "mlx-community/Qwen3-32B-4bit",
+      "revision": "bcaaf7f538adf166c1080a2befdb4f6019f66639",
+      "file": "model-00002-of-00004.safetensors",
+      "bytes": 5346575850,
+      "sha256": "2f8fbccad32a2a2f3072ffb8d6adea2790cc0bd84927cc0c44fbaf1d97912867"
+    },
+    {
+      "model": "mlx-community/Qwen3-32B-4bit",
+      "revision": "bcaaf7f538adf166c1080a2befdb4f6019f66639",
+      "file": "model-00003-of-00004.safetensors",
+      "bytes": 5359025653,
+      "sha256": "4412f7fa42e1419455698d3fe2b3c9557badd36a8a5c3a8d3d2439fc2fa6f0de"
+    },
+    {
+      "model": "mlx-community/Qwen3-32B-4bit",
+      "revision": "bcaaf7f538adf166c1080a2befdb4f6019f66639",
+      "file": "model-00004-of-00004.safetensors",
+      "bytes": 2357630312,
+      "sha256": "5cdadd1a77ec47b3ea7799255efb7d15431765874963f55a33f71f43386eb619"
+    }
+  ]
+}

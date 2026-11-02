@@ -1,0 +1,520 @@
+{
+  "quality_assessed_by_this_benchmark": false,
+  "timing_runs": "One screening trial after a 512-token warmup, unless a case states more trials. Random token IDs; not document or code quality evidence.",
+  "system_metrics": "System-wide swap and pressure include other applications. A recorded delta is not a causal attribution.",
+  "execution_order": [
+    "capacity-baseline-4b-16k-chunk256",
+    "capacity-baseline-4b-16k-chunk128",
+    "capacity-baseline-14b-16k-full",
+    "capacity-patched-14b-16k-kv8",
+    "capacity-baseline-14b-16k-kv8-chunk128",
+    "capacity-baseline-14b-16k-kv8-chunk2048",
+    "capacity-patched-14b-32k-kv8",
+    "capacity-patched-4b-16k-chunk2048",
+    "capacity-baseline-32b-8k-full",
+    "capacity-patched-32b-16k-kv8",
+    "capacity-baseline-32b-16k-kv8-chunk128"
+  ],
+  "cases": [
+    {
+      "case": "capacity-baseline-14b-16k-full",
+      "arguments": {
+        "model": "mlx-community/Qwen3-14B-4bit",
+        "revision": "a4d9b2df59d2c150bef02fcbe0d91046b7ca33a4",
+        "label": "capacity-baseline-14b-16k-full",
+        "prompt_tokens": 16384,
+        "generation_tokens": 256,
+        "kv_bits": 0,
+        "quantized_kv_start": 0,
+        "prefill_step_size": 2048,
+        "warmup_tokens": 512,
+        "trials": 1,
+        "budget_gib": null,
+        "max_prefill_seconds": 300.0
+      },
+      "source_sha256": "63d8e58a4b6f8c0902719499c693647fbf486bbd5d22b09868a07d37e08c83d6",
+      "max_mlx_peak_all_phases_bytes": 11600263204,
+      "physical_peak_bytes": 14252841752,
+      "maximum_rss_bytes": 4258004992,
+      "max_system_pressure_level": 1,
+      "max_system_swap_increase_bytes": 0,
+      "runner": {
+        "case": "capacity-baseline-14b-16k-full",
+        "returncode": 0,
+        "watchdog_stop": null,
+        "wall_seconds": 225.4758334159851
+      },
+      "trials": [
+        {
+          "phase": "trial-0",
+          "status": "completed",
+          "reason": null,
+          "ttft_s": 193.11890958301956,
+          "decode_tps": 12.318466190577688,
+          "total_s": 213.81953870801954,
+          "generation_tokens": 256,
+          "peak_bytes": 11600263204,
+          "kv_bytes_end": 2726297600,
+          "meets_performance_screen": true,
+          "meets_latency_and_decode_limits": true,
+          "within_mlx_budget_all_phases": true,
+          "no_observed_critical_pressure": true,
+          "processed_prompt_tokens": null
+        }
+      ]
+    },
+    {
+      "case": "capacity-baseline-14b-16k-kv8-chunk128",
+      "arguments": {
+        "model": "mlx-community/Qwen3-14B-4bit",
+        "revision": "a4d9b2df59d2c150bef02fcbe0d91046b7ca33a4",
+        "label": "capacity-baseline-14b-16k-kv8-chunk128",
+        "prompt_tokens": 16384,
+        "generation_tokens": 256,
+        "kv_bits": 8,
+        "quantized_kv_start": 0,
+        "prefill_step_size": 128,
+        "warmup_tokens": 512,
+        "trials": 1,
+        "budget_gib": null,
+        "max_prefill_seconds": 300.0
+      },
+      "source_sha256": "63d8e58a4b6f8c0902719499c693647fbf486bbd5d22b09868a07d37e08c83d6",
+      "max_mlx_peak_all_phases_bytes": 10408197752,
+      "physical_peak_bytes": 11973368720,
+      "maximum_rss_bytes": 7569571840,
+      "max_system_pressure_level": 1,
+      "max_system_swap_increase_bytes": 0,
+      "runner": {
+        "case": "capacity-baseline-14b-16k-kv8-chunk128",
+        "returncode": 0,
+        "watchdog_stop": null,
+        "wall_seconds": 255.5317810419947
+      },
+      "trials": [
+        {
+          "phase": "trial-0",
+          "status": "completed",
+          "reason": null,
+          "ttft_s": 218.18794995901408,
+          "decode_tps": 11.54345765350557,
+          "total_s": 240.2783848749823,
+          "generation_tokens": 256,
+          "peak_bytes": 10408197752,
+          "kv_bytes_end": 1448345600,
+          "meets_performance_screen": true,
+          "meets_latency_and_decode_limits": true,
+          "within_mlx_budget_all_phases": true,
+          "no_observed_critical_pressure": true,
+          "processed_prompt_tokens": null
+        }
+      ]
+    },
+    {
+      "case": "capacity-baseline-14b-16k-kv8-chunk2048",
+      "arguments": {
+        "model": "mlx-community/Qwen3-14B-4bit",
+        "revision": "a4d9b2df59d2c150bef02fcbe0d91046b7ca33a4",
+        "label": "capacity-baseline-14b-16k-kv8-chunk2048",
+        "prompt_tokens": 16384,
+        "generation_tokens": 256,
+        "kv_bits": 8,
+        "quantized_kv_start": 0,
+        "prefill_step_size": 2048,
+        "warmup_tokens": 512,
+        "trials": 1,
+        "budget_gib": null,
+        "max_prefill_seconds": 300.0
+      },
+      "source_sha256": "63d8e58a4b6f8c0902719499c693647fbf486bbd5d22b09868a07d37e08c83d6",
+      "max_mlx_peak_all_phases_bytes": 15550584894,
+      "physical_peak_bytes": 17155316456,
+      "maximum_rss_bytes": 8251834368,
+      "max_system_pressure_level": 2,
+      "max_system_swap_increase_bytes": 298592501,
+      "runner": {
+        "case": "capacity-baseline-14b-16k-kv8-chunk2048",
+        "returncode": 0,
+        "watchdog_stop": null,
+        "wall_seconds": 250.64582983398577
+      },
+      "trials": [
+        {
+          "phase": "trial-0",
+          "status": "completed",
+          "reason": null,
+          "ttft_s": 216.92366166599095,
+          "decode_tps": 12.285509803483578,
+          "total_s": 237.67982108297292,
+          "generation_tokens": 256,
+          "peak_bytes": 15550584894,
+          "kv_bytes_end": 1448345600,
+          "meets_performance_screen": true,
+          "meets_latency_and_decode_limits": true,
+          "within_mlx_budget_all_phases": true,
+          "no_observed_critical_pressure": true,
+          "processed_prompt_tokens": null
+        }
+      ]
+    },
+    {
+      "case": "capacity-baseline-32b-16k-kv8-chunk128",
+      "arguments": {
+        "model": "mlx-community/Qwen3-32B-4bit",
+        "revision": "bcaaf7f538adf166c1080a2befdb4f6019f66639",
+        "label": "capacity-baseline-32b-16k-kv8-chunk128",
+        "prompt_tokens": 16384,
+        "generation_tokens": 256,
+        "kv_bits": 8,
+        "quantized_kv_start": 0,
+        "prefill_step_size": 128,
+        "warmup_tokens": 512,
+        "trials": 1,
+        "budget_gib": null,
+        "max_prefill_seconds": 900.0
+      },
+      "source_sha256": "63d8e58a4b6f8c0902719499c693647fbf486bbd5d22b09868a07d37e08c83d6",
+      "max_mlx_peak_all_phases_bytes": 21651434588,
+      "physical_peak_bytes": 24061523816,
+      "maximum_rss_bytes": 11654938624,
+      "max_system_pressure_level": 2,
+      "max_system_swap_increase_bytes": 271843328,
+      "runner": {
+        "case": "capacity-baseline-32b-16k-kv8-chunk128",
+        "returncode": 0,
+        "watchdog_stop": null,
+        "wall_seconds": 601.5527563749929
+      },
+      "trials": [
+        {
+          "phase": "trial-0",
+          "status": "completed",
+          "reason": null,
+          "ttft_s": 525.2914774590172,
+          "decode_tps": 5.34716800169479,
+          "total_s": 572.9802727089846,
+          "generation_tokens": 256,
+          "peak_bytes": 21651434588,
+          "kv_bytes_end": 2317352960,
+          "meets_performance_screen": false,
+          "meets_latency_and_decode_limits": false,
+          "within_mlx_budget_all_phases": true,
+          "no_observed_critical_pressure": true,
+          "processed_prompt_tokens": 16384
+        }
+      ]
+    },
+    {
+      "case": "capacity-baseline-32b-8k-full",
+      "arguments": {
+        "model": "mlx-community/Qwen3-32B-4bit",
+        "revision": "bcaaf7f538adf166c1080a2befdb4f6019f66639",
+        "label": "capacity-baseline-32b-8k-full",
+        "prompt_tokens": 8192,
+        "generation_tokens": 256,
+        "kv_bits": 0,
+        "quantized_kv_start": 0,
+        "prefill_step_size": 2048,
+        "warmup_tokens": 512,
+        "trials": 1,
+        "budget_gib": null,
+        "max_prefill_seconds": 300.0
+      },
+      "source_sha256": "63d8e58a4b6f8c0902719499c693647fbf486bbd5d22b09868a07d37e08c83d6",
+      "max_mlx_peak_all_phases_bytes": 21428348976,
+      "physical_peak_bytes": 23247402760,
+      "maximum_rss_bytes": 8870117376,
+      "max_system_pressure_level": 4,
+      "max_system_swap_increase_bytes": 4986104710,
+      "runner": {
+        "case": "capacity-baseline-32b-8k-full",
+        "returncode": 0,
+        "watchdog_stop": null,
+        "wall_seconds": 270.5913109590183
+      },
+      "trials": [
+        {
+          "phase": "trial-0",
+          "status": "completed",
+          "reason": null,
+          "ttft_s": 206.6658289580373,
+          "decode_tps": 6.853773503575537,
+          "total_s": 243.8716105420026,
+          "generation_tokens": 256,
+          "peak_bytes": 21428348976,
+          "kv_bytes_end": 2214592512,
+          "meets_performance_screen": false,
+          "meets_latency_and_decode_limits": true,
+          "within_mlx_budget_all_phases": true,
+          "no_observed_critical_pressure": false,
+          "processed_prompt_tokens": 8192
+        }
+      ]
+    },
+    {
+      "case": "capacity-baseline-4b-16k-chunk128",
+      "arguments": {
+        "model": "mlx-community/Qwen3-4B-4bit",
+        "revision": "4dcb3d101c2a062e5c1d4bb173588c54ea6c4d25",
+        "label": "baseline-4b-16k-chunk128",
+        "prompt_tokens": 16384,
+        "generation_tokens": 256,
+        "kv_bits": 8,
+        "quantized_kv_start": 0,
+        "prefill_step_size": 128,
+        "warmup_tokens": 512,
+        "trials": 1,
+        "budget_gib": null
+      },
+      "source_sha256": "63d8e58a4b6f8c0902719499c693647fbf486bbd5d22b09868a07d37e08c83d6",
+      "max_mlx_peak_all_phases_bytes": 4246491768,
+      "physical_peak_bytes": 5657856784,
+      "maximum_rss_bytes": 2629484544,
+      "max_system_pressure_level": 1,
+      "max_system_swap_increase_bytes": 0,
+      "runner": null,
+      "trials": [
+        {
+          "phase": "trial-0",
+          "status": "completed",
+          "reason": null,
+          "ttft_s": 88.65771866700379,
+          "decode_tps": 20.039426392638003,
+          "total_s": 101.38263379200362,
+          "generation_tokens": 256,
+          "peak_bytes": 4246491768,
+          "kv_bytes_end": 1303511040,
+          "meets_performance_screen": true,
+          "meets_latency_and_decode_limits": true,
+          "within_mlx_budget_all_phases": true,
+          "no_observed_critical_pressure": true,
+          "processed_prompt_tokens": null
+        }
+      ]
+    },
+    {
+      "case": "capacity-baseline-4b-16k-chunk256",
+      "arguments": {
+        "model": "mlx-community/Qwen3-4B-4bit",
+        "revision": "4dcb3d101c2a062e5c1d4bb173588c54ea6c4d25",
+        "label": "baseline-4b-16k-chunk256",
+        "prompt_tokens": 16384,
+        "generation_tokens": 256,
+        "kv_bits": 8,
+        "quantized_kv_start": 0,
+        "prefill_step_size": 256,
+        "warmup_tokens": 512,
+        "trials": 1,
+        "budget_gib": null
+      },
+      "source_sha256": "63d8e58a4b6f8c0902719499c693647fbf486bbd5d22b09868a07d37e08c83d6",
+      "max_mlx_peak_all_phases_bytes": 4829595500,
+      "physical_peak_bytes": 6258117464,
+      "maximum_rss_bytes": 2628911104,
+      "max_system_pressure_level": 1,
+      "max_system_swap_increase_bytes": 0,
+      "runner": null,
+      "trials": [
+        {
+          "phase": "trial-0",
+          "status": "completed",
+          "reason": null,
+          "ttft_s": 87.85195733397268,
+          "decode_tps": 25.400417978800867,
+          "total_s": 97.89116220897995,
+          "generation_tokens": 256,
+          "peak_bytes": 4829595500,
+          "kv_bytes_end": 1303511040,
+          "meets_performance_screen": true,
+          "meets_latency_and_decode_limits": true,
+          "within_mlx_budget_all_phases": true,
+          "no_observed_critical_pressure": true,
+          "processed_prompt_tokens": null
+        }
+      ]
+    },
+    {
+      "case": "capacity-patched-14b-16k-kv8",
+      "arguments": {
+        "model": "mlx-community/Qwen3-14B-4bit",
+        "revision": "a4d9b2df59d2c150bef02fcbe0d91046b7ca33a4",
+        "label": "capacity-patched-14b-16k-kv8",
+        "prompt_tokens": 16384,
+        "generation_tokens": 256,
+        "kv_bits": 8,
+        "quantized_kv_start": 0,
+        "prefill_step_size": 2048,
+        "warmup_tokens": 512,
+        "trials": 1,
+        "budget_gib": null,
+        "max_prefill_seconds": 300.0
+      },
+      "source_sha256": "e3e6fafc198e93d0113068a9e5b888860cfa0bc3e69e24126b02be98f11d9e86",
+      "max_mlx_peak_all_phases_bytes": 10602281036,
+      "physical_peak_bytes": 12107897696,
+      "maximum_rss_bytes": 8550858752,
+      "max_system_pressure_level": 1,
+      "max_system_swap_increase_bytes": 0,
+      "runner": {
+        "case": "capacity-patched-14b-16k-kv8",
+        "returncode": 0,
+        "watchdog_stop": null,
+        "wall_seconds": 230.48827920801705
+      },
+      "trials": [
+        {
+          "phase": "trial-0",
+          "status": "completed",
+          "reason": null,
+          "ttft_s": 194.3558487079572,
+          "decode_tps": 12.221148072473758,
+          "total_s": 215.22131883300608,
+          "generation_tokens": 256,
+          "peak_bytes": 10602281036,
+          "kv_bytes_end": 1448345600,
+          "meets_performance_screen": true,
+          "meets_latency_and_decode_limits": true,
+          "within_mlx_budget_all_phases": true,
+          "no_observed_critical_pressure": true,
+          "processed_prompt_tokens": null
+        }
+      ]
+    },
+    {
+      "case": "capacity-patched-14b-32k-kv8",
+      "arguments": {
+        "model": "mlx-community/Qwen3-14B-4bit",
+        "revision": "a4d9b2df59d2c150bef02fcbe0d91046b7ca33a4",
+        "label": "capacity-patched-14b-32k-kv8",
+        "prompt_tokens": 32768,
+        "generation_tokens": 256,
+        "kv_bits": 8,
+        "quantized_kv_start": 0,
+        "prefill_step_size": 2048,
+        "warmup_tokens": 512,
+        "trials": 1,
+        "budget_gib": null,
+        "max_prefill_seconds": 300.0
+      },
+      "source_sha256": "e3e6fafc198e93d0113068a9e5b888860cfa0bc3e69e24126b02be98f11d9e86",
+      "max_mlx_peak_all_phases_bytes": 11255478336,
+      "physical_peak_bytes": 13526489832,
+      "maximum_rss_bytes": 8673460224,
+      "max_system_pressure_level": 1,
+      "max_system_swap_increase_bytes": 0,
+      "runner": {
+        "case": "capacity-patched-14b-32k-kv8",
+        "returncode": 0,
+        "watchdog_stop": null,
+        "wall_seconds": 335.61860824999167
+      },
+      "trials": [
+        {
+          "phase": "trial-0",
+          "status": "stopped",
+          "reason": "Prefill exceeded 300.0 seconds",
+          "ttft_s": null,
+          "decode_tps": null,
+          "total_s": 324.25942404201487,
+          "generation_tokens": 0,
+          "peak_bytes": 11255478336,
+          "kv_bytes_end": 2139095040,
+          "meets_performance_screen": false,
+          "meets_latency_and_decode_limits": false,
+          "within_mlx_budget_all_phases": true,
+          "no_observed_critical_pressure": true,
+          "processed_prompt_tokens": 24576
+        }
+      ]
+    },
+    {
+      "case": "capacity-patched-32b-16k-kv8",
+      "arguments": {
+        "model": "mlx-community/Qwen3-32B-4bit",
+        "revision": "bcaaf7f538adf166c1080a2befdb4f6019f66639",
+        "label": "capacity-patched-32b-16k-kv8",
+        "prompt_tokens": 16384,
+        "generation_tokens": 256,
+        "kv_bits": 8,
+        "quantized_kv_start": 0,
+        "prefill_step_size": 2048,
+        "warmup_tokens": 512,
+        "trials": 1,
+        "budget_gib": null,
+        "max_prefill_seconds": 900.0
+      },
+      "source_sha256": "e3e6fafc198e93d0113068a9e5b888860cfa0bc3e69e24126b02be98f11d9e86",
+      "max_mlx_peak_all_phases_bytes": 21512316990,
+      "physical_peak_bytes": 23980013320,
+      "maximum_rss_bytes": 11670814720,
+      "max_system_pressure_level": 2,
+      "max_system_swap_increase_bytes": 224332349,
+      "runner": {
+        "case": "capacity-patched-32b-16k-kv8",
+        "returncode": 0,
+        "watchdog_stop": null,
+        "wall_seconds": 541.1758563750191
+      },
+      "trials": [
+        {
+          "phase": "trial-0",
+          "status": "completed",
+          "reason": null,
+          "ttft_s": 465.7337517499691,
+          "decode_tps": 5.270334483094103,
+          "total_s": 514.1177776249824,
+          "generation_tokens": 256,
+          "peak_bytes": 21512316990,
+          "kv_bytes_end": 2317352960,
+          "meets_performance_screen": false,
+          "meets_latency_and_decode_limits": false,
+          "within_mlx_budget_all_phases": true,
+          "no_observed_critical_pressure": true,
+          "processed_prompt_tokens": 16384
+        }
+      ]
+    },
+    {
+      "case": "capacity-patched-4b-16k-chunk2048",
+      "arguments": {
+        "model": "mlx-community/Qwen3-4B-4bit",
+        "revision": "4dcb3d101c2a062e5c1d4bb173588c54ea6c4d25",
+        "label": "capacity-patched-4b-16k-chunk2048",
+        "prompt_tokens": 16384,
+        "generation_tokens": 256,
+        "kv_bits": 8,
+        "quantized_kv_start": 0,
+        "prefill_step_size": 2048,
+        "warmup_tokens": 512,
+        "trials": 1,
+        "budget_gib": null,
+        "max_prefill_seconds": 300.0
+      },
+      "source_sha256": "e3e6fafc198e93d0113068a9e5b888860cfa0bc3e69e24126b02be98f11d9e86",
+      "max_mlx_peak_all_phases_bytes": 4336942170,
+      "physical_peak_bytes": 5792713464,
+      "maximum_rss_bytes": 2628304896,
+      "max_system_pressure_level": 1,
+      "max_system_swap_increase_bytes": 0,
+      "runner": null,
+      "trials": [
+        {
+          "phase": "trial-0",
+          "status": "completed",
+          "reason": null,
+          "ttft_s": 72.75735508295475,
+          "decode_tps": 25.688666772978586,
+          "total_s": 82.68391149997478,
+          "generation_tokens": 256,
+          "peak_bytes": 4336942170,
+          "kv_bytes_end": 1303511040,
+          "meets_performance_screen": true,
+          "meets_latency_and_decode_limits": true,
+          "within_mlx_budget_all_phases": true,
+          "no_observed_critical_pressure": true,
+          "processed_prompt_tokens": 16384
+        }
+      ]
+    }
+  ]
+}

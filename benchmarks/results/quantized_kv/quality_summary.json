@@ -1,0 +1,182 @@
+{
+  "baseline_sha256": "63d8e58a4b6f8c0902719499c693647fbf486bbd5d22b09868a07d37e08c83d6",
+  "patched_sha256": "e3e6fafc198e93d0113068a9e5b888860cfa0bc3e69e24126b02be98f11d9e86",
+  "metrics": {
+    "qasper": "Best-reference normalized English token F1, multiplied by 100.",
+    "hotpotqa": "Best-reference normalized English token F1, multiplied by 100.",
+    "lcc": "First nonempty/non-fence line SequenceMatcher similarity, autojunk=False, multiplied by 100."
+  },
+  "scope": "Paired small-sample regression screens on Qwen3-4B-4bit with 8-bit KV; not official LongBench scores or proof of general quality equivalence.",
+  "independent_validation": {
+    "samples": 48,
+    "prompt_tokens_min": 3043,
+    "prompt_tokens_max": 15779,
+    "datasets": {
+      "qasper": {
+        "samples": 16,
+        "scores_0_to_100": {
+          "full": 31.292420814479637,
+          "baseline8": 31.292420814479637,
+          "patched8": 31.792420814479637
+        }
+      },
+      "hotpotqa": {
+        "samples": 16,
+        "scores_0_to_100": {
+          "full": 55.208333333333336,
+          "baseline8": 55.208333333333336,
+          "patched8": 55.208333333333336
+        }
+      },
+      "lcc": {
+        "samples": 16,
+        "scores_0_to_100": {
+          "full": 43.66563686050826,
+          "baseline8": 45.89746839616125,
+          "patched8": 47.551214975988096
+        }
+      }
+    },
+    "old_vs_new_8bit": {
+      "identical_texts": 42,
+      "equal_scores": 43,
+      "higher_scores": 2,
+      "lower_scores": 3,
+      "changed_outputs": [
+        {
+          "id": "qasper-98",
+          "baseline8_score": 0.0,
+          "patched8_score": 0.08,
+          "score_delta": 0.08,
+          "baseline8_text": "The proposed qualitative annotation schema categorizes gold standards based on linguistic complexity, required reasoning, background knowledge, and factual correctness. It includes dimensions such as Span, Paraphrasing, Unanswerable, and Generated answers, along with annotations for Supporting Fact, Debatable, Wrong, and various reasoning types. It also considers lexical cues, syntactic features, and semantic altering grammatical modifiers.",
+          "patched8_text": "The proposed qualitative annotation schema categorizes gold standards based on linguistic complexity, required reasoning, background knowledge, and factual correctness. It includes dimensions such as Span, Paraphrasing, Unanswerable, and Generated answers, along with annotations for Supporting Fact, Debatable, Wrong, and various reasoning types. It also considers lexical cues, syntactic features, and semantic altering grammatical modifiers. The framework is detailed in the text, with specific annotations for each category. \n\nAnswer: Yes."
+        },
+        {
+          "id": "lcc-405",
+          "baseline8_score": 0.1941747572815534,
+          "patched8_score": 0.15135135135135136,
+          "score_delta": -0.042823405930202035,
+          "baseline8_text": "           PlaceNPC(fakespawnsA, fakespawnsB, fakespawnsC, fakespawnsD, fakespawnsE, x, y, z, map, mintime, maxtime, Utility.ToInt32(swalkingrange), Utility.ToInt32(shomerange), Utility",
+          "patched8_text": "           Spawn(map, x, y, z, fakespawnsA, fakespawnsB, fakespawnsC, fakespawnsD, fakespawnsE, mintime, maxtime, swalkingrange, shomerange, sspawnid, snpccount, sf"
+        },
+        {
+          "id": "lcc-172",
+          "baseline8_score": 0.4657534246575342,
+          "patched8_score": 0.4230769230769231,
+          "score_delta": -0.04267650158061115,
+          "baseline8_text": "\t\tMsg(\"I don't know what that means.\");",
+          "patched8_text": "\t\tMsg(\"I'm not sure what that means, but I think it's a good thing.\");"
+        },
+        {
+          "id": "lcc-374",
+          "baseline8_score": 0.6329113924050633,
+          "patched8_score": 1.0,
+          "score_delta": 0.36708860759493667,
+          "baseline8_text": "b, System.AsyncCallback callback, object asyncState);\n}",
+          "patched8_text": "       b}, callback, asyncState);\n        }\n        public int EndAddInt(System.IAsyncResult result) {\n            return ((int)(this.EndInvoke(result)));\n        }\n    }"
+        },
+        {
+          "id": "lcc-475",
+          "baseline8_score": 0.9873417721518988,
+          "patched8_score": 0.9873417721518988,
+          "score_delta": 0.0,
+          "baseline8_text": "       for n in range(params[0]['nbins'] + 1)]\n            if params[1]['bins'] is None:\n                step = (params[1]['high'] - params[1]['low'])\\\n                    / float(params[1]['nbins'])\n                params[1]['bins'] = [\n",
+          "patched8_text": "           for n in range(params[0]['nbins'] + 1)]\n            Object.__init__(self, name, title,\n                params[0]['nbins'], array('d', params[0]['bins']),\n                params[1]['nbins'], array('d', params[1]['bins']),\n               "
+        },
+        {
+          "id": "lcc-455",
+          "baseline8_score": 0.22666666666666666,
+          "patched8_score": 0.20967741935483872,
+          "score_delta": -0.016989247311827937,
+          "baseline8_text": "\tsuper.addContextMenus(ContextMenusFlyweightFactory.getInstance().create(Forms.class, context, appForm, form, this));",
+          "patched8_text": "super.setLocalContext(new LocalContext(context, form.getFormInfo(), componentIdentifier));"
+        }
+      ]
+    },
+    "first_token": {
+      "agreements": 45,
+      "median_symmetric_kl": 0.004148147803752977,
+      "max_symmetric_kl": 0.13768805215739482,
+      "normalization": "Float64 logsumexp normalization before comparing first-token distributions."
+    }
+  },
+  "diagnostic_rerun_not_held_out": {
+    "samples": 48,
+    "prompt_tokens_min": 2013,
+    "prompt_tokens_max": 7877,
+    "datasets": {
+      "qasper": {
+        "samples": 16,
+        "scores_0_to_100": {
+          "full": 28.398383983061404,
+          "baseline8": 26.452361255788677,
+          "patched8": 29.204835595964628
+        }
+      },
+      "hotpotqa": {
+        "samples": 16,
+        "scores_0_to_100": {
+          "full": 65.83333333333333,
+          "baseline8": 72.08333333333333,
+          "patched8": 65.83333333333333
+        }
+      },
+      "lcc": {
+        "samples": 16,
+        "scores_0_to_100": {
+          "full": 43.605742086021834,
+          "baseline8": 40.90051146138331,
+          "patched8": 41.30316579234646
+        }
+      }
+    },
+    "old_vs_new_8bit": {
+      "identical_texts": 43,
+      "equal_scores": 43,
+      "higher_scores": 4,
+      "lower_scores": 1,
+      "changed_outputs": [
+        {
+          "id": "qasper-199",
+          "baseline8_score": 0.125,
+          "patched8_score": 0.12903225806451613,
+          "score_delta": 0.0040322580645161255,
+          "baseline8_text": "The article mentions that the proposed method achieves state-of-the-art results on both single-relation and multi-relation KBQA tasks. Specifically, it is compared to the SimpleQuestions and WebQSP datasets. Therefore, the answer is yes.\n\nAnswer: yes",
+          "patched8_text": "The article mentions that the proposed method achieves state-of-the-art results on both single-relation and multi-relation KBQA tasks. Specifically, it compares with the SimpleQuestions and WebQSP datasets. Therefore, the answer is yes.\n\nAnswer: yes"
+        },
+        {
+          "id": "qasper-176",
+          "baseline8_score": 0.36363636363636365,
+          "patched8_score": 0.8,
+          "score_delta": 0.4363636363636364,
+          "baseline8_text": "The clinical datasets used in the paper are NUBes-PHI and MEDDOCAN.",
+          "patched8_text": "NUBes-PHI and MEDDOCAN."
+        },
+        {
+          "id": "hotpotqa-120",
+          "baseline8_score": 1.0,
+          "patched8_score": 0.0,
+          "score_delta": -1.0,
+          "baseline8_text": "duck",
+          "patched8_text": "Redhead."
+        },
+        {
+          "id": "lcc-132",
+          "baseline8_score": 0.44642857142857145,
+          "patched8_score": 0.4807692307692308,
+          "score_delta": 0.03434065934065933,
+          "baseline8_text": "           foreach (string CriteriaCode in CriteriaCodesUsed)\n            {\n                if (CriteriaCode == \"ROLE\")\n                {\n                    if (txtSpecialRolePreAttendance.NumberValueInt == 0 &&\n                        txtSpecialRoleAttendance.NumberValueInt == 0 &&\n                        txtSpecialRoleCampaignAttendance.NumberValueInt == 0 &&\n",
+          "patched8_text": "           foreach (string Code in CriteriaCodesUsed)\n            {\n                if (Code == \"ROLE\")\n                {\n                    if (txtSpecialRolePreAttendance.NumberValueInt == 0 &&\n                        txtSpecialRoleAttendance.NumberValueInt == 0 &&\n                        txtSpecialRoleAccommodation.NumberValueInt == 0 &&\n                       "
+        },
+        {
+          "id": "lcc-114",
+          "baseline8_score": 0.18,
+          "patched8_score": 0.21008403361344538,
+          "score_delta": 0.030084033613445388,
+          "baseline8_text": "def test_lowest_spotprice_two_zones(self):\n    \"\"\"Test that the lowest spotprice is correctly identified across multiple zones.\"\"\"\n    history = [\n        {u'Timestamp': datetime.datetime(2015, 12, 31, 22, 13, 43,\n                                        ",
+          "patched8_text": "alert.check_for_alert(history, {'name': 'Test', 'threshold': '0.1', 'region': 'us-east-1', 'zone': 'us-east-1b', 'instance_type': 'g2.2xlarge', 'product': 'Windows', 'user': '1', '"
+        }
+      ]
+    }
+  }
+}
