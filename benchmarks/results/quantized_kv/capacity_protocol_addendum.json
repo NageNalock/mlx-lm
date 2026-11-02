@@ -1,0 +1,10 @@
+{
+  "recorded_at": "2026-11-02T08:32:36.296049+00:00",
+  "recorded_before_any_32b_measurement": true,
+  "performance_limits_unchanged": {
+    "ttft_s": 300,
+    "decode_tokens_per_second_min": 5
+  },
+  "completion_characterization": "For the key 32B 16K paired comparison, allow up to 900 seconds of prefill if memory remains within the original budget and pressure is not critical. This measures actual generation throughput even when the predeclared latency screen fails. Do not reclassify a TTFT above 300 seconds as passing. Other screens retain the 300-second early stop.",
+  "reason": "The user accepts several minutes of first processing. A provisional latency screen failure must not be presented as an inability to load or run the model. Full measurements also allow the user to judge a different latency tolerance."
+}

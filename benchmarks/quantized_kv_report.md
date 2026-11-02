@@ -73,7 +73,9 @@ model, KV precision, prompt, and generation length. Start is the existing
 | Qwen3-4B | 8192 | 8 | 5000 | 30.19 → 28.42 | 5.167 → 3.641 | 34.37 → 34.01 |
 | Llama-3.2-1B | 8192 | 8 | 0 | 6.81 → 5.52 | 4.106 → 1.703 | 108.90 → 108.61 |
 
-At 16K, Qwen's TTFT decreases 19.5% and peak allocation decreases 48.4%.
+At 16K with these 2048-token chunks, Qwen's TTFT decreases 19.5% and peak
+allocation decreases 48.4%. This is not a comparison against the baseline's
+minimum attainable memory use; the capacity screen below also tunes chunks.
 Total generation time decreases from 98.90 s to 81.60 s. At 8K with the default
 start threshold of 5000, TTFT decreases 5.9%; the larger 14.0% improvement
 requires the explicitly measured start-0 configuration.
@@ -88,6 +90,129 @@ Allocation after each cache release is constant across repetitions.
 [Raw performance trials](results/quantized_kv/performance.jsonl) retain measured
 values, arguments, versions, and source hashes; only local import paths are
 omitted. These results apply to the measured M1 Pro and the supported shapes.
+
+## Larger-model capacity screen
+
+The follow-up asks whether this change enables a larger model on the same
+32 GiB Mac for long-document or code analysis. Before measuring the 14B and
+32B models, the [protocol](results/quantized_kv/capacity_protocol.json) set a
+provisional limit of 300 seconds to the first token and at least 5 generated
+tokens/s. The user accepts several minutes of initial processing; 300 seconds
+is an explicit experimental choice, not an exact user requirement.
+
+The MLX allocation budget is the device's recommended working set:
+26,800,603,136 bytes (24.960 GiB). It is neither a physical memory limit nor
+a simulation of a smaller Mac. A budget stop is not an OOM. The process also
+stops after a prefill chunk exceeds its time limit, or under critical
+system memory pressure. Such runs have no completed TTFT; their elapsed time
+is a lower bound. A watchdog checks pressure during model loading as well.
+
+An [addendum](results/quantized_kv/capacity_protocol_addendum.json), recorded
+before any 32B measurement, allows the key 32B 16K comparisons to complete
+up to a 900-second prefill ceiling. This measures subsequent generation even
+if the first token takes longer than the provisional limit. The pass criteria
+remain 300 seconds and 5 tokens/s; a slower completion is not reclassified
+as a pass. Memory and pressure limits are unchanged.
+
+Each configuration uses a fresh process, a 512-token warmup, and one measured
+trial with 256 forced output tokens. This differs from the full-shape warmup
+and three-trial timing comparisons above. These are capacity screens, not
+precise speedup estimates. Latency excludes model loading and warmup; loading
+time and allocation are retained in the raw events. Random token IDs measure
+allocation and execution; they do not establish long-document or code-analysis
+answer quality.
+
+All weights remain 4-bit. The primary comparison keeps 8-bit KV, group size
+64, and quantization start 0. The baseline may reduce its prefill chunk size,
+and unquantized fused attention is also evaluated where it fits. Existing
+KV quantization savings are not a benefit introduced by this patch.
+
+A preliminary Qwen3-4B 16K control demonstrates why chunk tuning matters.
+Original 8-bit KV with chunks of 256 peaks at 4.498 GiB; with chunks of 128,
+it peaks at 3.955 GiB. Both complete below 90 seconds to the first token.
+The new path with 2048-token chunks takes 72.76 seconds and peaks at
+4.039 GiB using the same capacity harness. Thus, the 48.4% default-chunk
+reduction does not demonstrate a lower memory floor than a tuned baseline.
+These single-trial screens support a speed/memory tradeoff, not a precise
+speedup estimate against every possible baseline configuration.
+
+Qwen3-14B-4bit, revision `a4d9b2df59d2c150bef02fcbe0d91046b7ca33a4`,
+with 16384 input tokens:
+
+| Path | KV bits | Chunk | TTFT (s) | Decode (tok/s) | MLX peak (GiB) | Process footprint peak (GiB) |
+|---|---:|---:|---:|---:|---:|---:|
+| Original | Unquantized | 2048 | 193.12 | 12.32 | 10.804 | 13.274 |
+| Original | 8 | 2048 | 216.92 | 12.29 | 14.483 | 15.977 |
+| Original | 8 | 128 | 218.19 | 11.54 | 9.693 | 11.151 |
+| New | 8 | 2048 | 194.36 | 12.22 | 9.874 | 11.276 |
+
+All four configurations meet the provisional performance limits. The
+default-chunk improvement is useful, but the baseline already runs this
+model and context. Its 128-token chunks use slightly less peak MLX memory
+than the new 2048-token path. The unquantized baseline has similar timing
+to the new quantized path, at a larger cache size.
+
+An additional new-path 14B 32768-token screen stops after processing 24576
+tokens in 324.26 seconds. Its peak allocation at that point is 10.482 GiB,
+below the memory budget, and it produces no output tokens. This is a latency
+screen failure, not an OOM or a completed 32K memory measurement. It shows
+that memory savings alone do not meet the chosen waiting-time target.
+
+Qwen3-32B-4bit, revision `bcaaf7f538adf166c1080a2befdb4f6019f66639`,
+is measured after both model downloads finish. The weight files were checked
+against their official Hugging Face SHA-256 metadata; the
+[asset manifest](results/quantized_kv/capacity_model_assets.json) records each
+file. Weights alone occupy 17.164 GiB of MLX allocation.
+
+| Path | Input tokens | KV bits | Chunk | TTFT (s) | Decode (tok/s) | MLX peak (GiB) | Process footprint peak (GiB) |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Original | 8192 | Unquantized | 2048 | 206.67 | 6.85 | 19.957 | 21.651 |
+| Original | 16384 | 8 | 128 | 525.29 | 5.35 | 20.164 | 22.409 |
+| New | 16384 | 8 | 2048 | 465.73 | 5.27 | 20.035 | 22.333 |
+
+The original code completes the 32B 8K request inside the latency and decode
+limits. However, during this first 32B load/warmup the system briefly reports
+critical pressure and swap use rises by 4.644 GiB. The measured request then
+runs at normal pressure with no further swap-out increase. This row therefore
+passes the timing/allocation checks but not the combined pressure screen.
+Later processes start with those pages already swapped out. Their smaller
+swap deltas cannot be attributed to this patch; model loading is unchanged.
+
+Both 16K paths complete 256 output tokens, with normal pressure throughout
+their measured requests. Both fail the predeclared 300-second TTFT screen,
+while allocation and subsequent throughput meet their limits. The new path
+takes about 60 seconds less to the first token in this screen; the two
+paths have similar peak memory and decode throughput. Their stored KV
+allocations are identical: 2,317,352,960 bytes. The small throughput difference
+does not demonstrate a decode change; production decode code is unchanged.
+
+**These measurements do not establish a larger-model capability gain.**
+With a 300-second initial-wait limit, neither 32B 16K configuration qualifies.
+With a more relaxed limit, both run. The original already runs 14B at 16K and
+32B at 8K. This patch is a prefill optimization, not a reduction in model
+weights or permanent KV storage. The results do not support a claim that it
+upgrades this Mac from 14B-only to 32B-capable.
+
+The 32B comparison is a single screen of two chunk choices at fixed KV
+precision. Unquantized 32B 16K, lower KV precisions, other model families,
+and a 32B 32K run remain unevaluated. The 14B and 32B model outputs here
+have no task-quality assessment; the separate quality checks below use
+smaller models.
+
+MLX peak includes model load, warmup, and the measured trial. The separate
+process footprint comes from macOS `/usr/bin/time -l`; it includes memory
+that MLX's active allocation counter does not. System-wide swap and pressure
+also include other applications. Downloads overlapped the initial 4B and
+14B screens, so these runs are not clean estimates of small timing changes.
+No GPU benchmark jobs overlap.
+
+[Raw capacity events](results/quantized_kv/capacity.jsonl) retain progress,
+stopped runs, source hashes, and process measurements. The
+[summary](results/quantized_kv/capacity_summary.json) applies the performance
+limits consistently. It separates latency/throughput, allocation, and observed
+critical-pressure flags. Its combined screen requires all three to pass,
+including model loading and warmup. Passing this synthetic screen alone does
+not establish model quality or a general claim of practical usability.
 
 ## Quality and regression tests
 
@@ -201,6 +326,34 @@ Use `--prompt-tokens 16384` for the longer input, `--kv-bits 4` for 4-bit
 cache, `--kv-bits 0` for an unquantized control, and
 `--quantized-kv-start 5000` for the existing default threshold. Model weights
 and tokenizer revisions must remain fixed between comparisons.
+
+For the capacity screen, download the pinned model once, then run each
+configuration in a separate process. Keep the same device, weight revision,
+input length, and generation length. The macOS `time` output records process
+footprint separately from MLX allocation. For the 32B 16K completion comparison:
+
+```bash
+PYTHONPATH=../mlx-lm-baseline /usr/bin/time -l python benchmarks/quantized_kv_capacity.py \
+  --model mlx-community/Qwen3-32B-4bit \
+  --revision bcaaf7f538adf166c1080a2befdb4f6019f66639 \
+  --label baseline-32b-16k --prompt-tokens 16384 --kv-bits 8 \
+  --prefill-step-size 128 --max-prefill-seconds 900 \
+  > baseline-capacity.jsonl 2> baseline-capacity.time
+
+PYTHONPATH=. /usr/bin/time -l python benchmarks/quantized_kv_capacity.py \
+  --model mlx-community/Qwen3-32B-4bit \
+  --revision bcaaf7f538adf166c1080a2befdb4f6019f66639 \
+  --label patched-32b-16k --prompt-tokens 16384 --kv-bits 8 \
+  --prefill-step-size 2048 --max-prefill-seconds 900 \
+  > patched-capacity.jsonl 2> patched-capacity.time
+```
+
+Use `--max-prefill-seconds 300` for an early latency screen. A stopped run
+records its reason and completed prompt-token count, with no completed TTFT.
+The default allocation budget comes from the device's recommended working set.
+The recorded runs also use an external watchdog with a 30-minute process
+ceiling, stopping after three consecutive critical-pressure readings sampled
+five seconds apart. This watchdog only terminates its own process group.
 
 The quality harness reconstructs prompts from a pinned LongBench archive and
 checks their hashes against the sample manifest. It uses greedy generation,
