@@ -1,0 +1,48 @@
+{
+  "baseline_commit": "736ab0d8c1d0edc79c3d798044fe6904e2fa23be",
+  "implementation_commit": "2836d8a6c74b8622c306c6eb806870955e9c80cf",
+  "standard_suite": {
+    "command": "python -m unittest discover -v tests",
+    "baseline": {
+      "run": 401,
+      "passed": 400,
+      "skipped": 1,
+      "errors": 0
+    },
+    "patched": {
+      "run": 406,
+      "passed": 405,
+      "skipped": 1,
+      "errors": 0
+    }
+  },
+  "regression_test": {
+    "name": "TestModels.test_quantized_prefill_avoids_attention_matrix",
+    "baseline": "fails: AssertionError Unfused attention",
+    "patched": "passes"
+  },
+  "formatting": {
+    "command": "pre-commit run --all-files",
+    "black": "26.10.1: passed",
+    "isort": "9.0.1: passed",
+    "ruff": "0.16.8: passed"
+  },
+  "model_parallel": {
+    "command": "mlx.launch -n 2 python tests/model_parallel_tests.py",
+    "baseline": "2 errors per rank",
+    "patched": "same 2 errors per rank",
+    "tests": [
+      "TestModelParallel.test_shard[muse_spark]",
+      "TestModelParallel.test_pipeline[muse_spark]"
+    ],
+    "reason": "AttributeError: ModelArgs has no top-level vocab_size",
+    "launcher_exit_code": 0,
+    "worker_logs_checked": true
+  },
+  "cpu_routing_checks": {
+    "run": 5,
+    "passed": 2,
+    "skipped": 3,
+    "note": "Metal-only tests are skipped with the CPU default device; CPU and small/masked fallback checks pass."
+  }
+}

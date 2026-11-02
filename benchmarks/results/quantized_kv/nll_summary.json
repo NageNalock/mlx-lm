@@ -1,0 +1,42 @@
+{
+  "qwen": {
+    "full": {
+      "nll": 0.6960230432450771,
+      "perplexity": 2.0057600038905075,
+      "correct": 890,
+      "tokens": 1024
+    },
+    "baseline8": {
+      "nll": 0.6996886590495706,
+      "perplexity": 2.013125841378209,
+      "correct": 892,
+      "tokens": 1024
+    },
+    "patched8": {
+      "nll": 0.6982745146378875,
+      "perplexity": 2.010281002700062,
+      "correct": 891,
+      "tokens": 1024
+    }
+  },
+  "llama": {
+    "full": {
+      "nll": 0.8548842780292034,
+      "perplexity": 2.3511022906411965,
+      "correct": 845,
+      "tokens": 1024
+    },
+    "baseline8": {
+      "nll": 0.8543620053678751,
+      "perplexity": 2.349874694788589,
+      "correct": 846,
+      "tokens": 1024
+    },
+    "patched8": {
+      "nll": 0.8549484014511108,
+      "perplexity": 2.3512530561990768,
+      "correct": 847,
+      "tokens": 1024
+    }
+  }
+}
